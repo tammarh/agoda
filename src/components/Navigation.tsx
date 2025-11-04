@@ -1,5 +1,6 @@
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 type NavigationProps = {
@@ -8,17 +9,20 @@ type NavigationProps = {
   onOpenAuth: () => void;
 };
 
-export default function Navigation({ currentPage, onNavigate, onOpenAuth }: NavigationProps) {
+export default function Navigation({ onNavigate, onOpenAuth }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const location = useLocation();
 
   const navItems = [
-    { id: 'home', label: 'ראשי' },
-    { id: 'about', label: 'אודות' },
-    { id: 'gallery', label: 'גלריה' },
-    { id: 'store', label: 'חנות האגודה' },
-    { id: 'rights', label: 'זכויות' },
+    { id: 'home', label: 'ראשי', path: '/' },
+    { id: 'about', label: 'אודות', path: '/about' },
+    { id: 'gallery', label: 'גלריה', path: '/gallery' },
+    { id: 'store', label: 'חנות האגודה', path: '/store' },
+    { id: 'rights', label: 'זכויות', path: '/rights' },
   ];
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-lg z-50">
@@ -40,13 +44,13 @@ export default function Navigation({ currentPage, onNavigate, onOpenAuth }: Navi
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className={`text-base font-medium transition-all duration-300 hover:text-cyan-600 relative pb-1 ${
-                  currentPage === item.id
+                  isActive(item.path)
                     ? 'text-cyan-600'
                     : 'text-gray-700'
                 }`}
               >
                 {item.label}
-                {currentPage === item.id && (
+                {isActive(item.path) && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 animate-pulse" />
                 )}
               </button>
@@ -92,7 +96,7 @@ export default function Navigation({ currentPage, onNavigate, onOpenAuth }: Navi
                   setMobileMenuOpen(false);
                 }}
                 className={`block w-full text-right px-4 py-3 rounded-lg transition-all duration-300 ${
-                  currentPage === item.id
+                  isActive(item.path)
                     ? 'bg-gradient-to-r from-cyan-50 to-blue-50 text-cyan-600 font-medium'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
